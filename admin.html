@@ -3,124 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Iuran - Secure Scan</title>
+    <title>Admin Iuran - Plalangan</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        :root { --primary: #27ae60; --bg: #f4f7f6; --dark: #2c3e50; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 15px; 
-            display: block !important; 
-        } 
-        .container { max-width: 500px; margin: auto; }
-        .card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-bottom: 15px; background: #000; }
-        label { display: block; font-weight: bold; margin-top: 15px; font-size: 13px; color: var(--dark); }
-        
-        /* Input nama dibuat normal agar keyboard muncul */
-        input, select { 
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 5px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            font-size: 16px; 
-            background: #fff;
-            -webkit-appearance: none; /* Menghindari bug styling di iPhone */
+        :root { 
+            --primary: #27ae60; --secondary: #3498db; --danger: #e74c3c;
+            --bg: #f4f7f6; --card-bg: #ffffff; --text-main: #2c3e50;
+            --text-label: #5d6d7e; --input-bg: #ffffff; --input-border: #dddddd;
         }
-
-        .btn-scan { background: #3498db; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-        .btn-save { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 20px; cursor: pointer; font-size: 16px; }
-        .btn-save:disabled { background: #bdc3c7; cursor: not-allowed; }
+        [data-theme="dark"] {
+            --bg: #121212; --card-bg: #1e1e1e; --text-main: #ffffff;
+            --text-label: #bdc3c7; --input-bg: #2d2d2d; --input-border: #444444;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding: 15px 15px 80px 15px; transition: 0.3s; }
+        .container { max-width: 500px; margin: auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .brand-name { font-size: 20px; font-weight: 800; margin: 0; }
+        .brand-sub { font-size: 12px; color: var(--primary); font-weight: bold; }
+        #themeBtn { background: none; border: 1px solid var(--text-label); color: var(--text-label); padding: 5px 12px; border-radius: 20px; font-size: 11px; cursor: pointer; }
+        .tab-content { display: none; animation: fadeIn 0.3s; }
+        .active-tab { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-top: 15px; font-size: 12px; color: var(--text-label); }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--input-border); border-radius: 10px; background: var(--input-bg); color: var(--text-main); font-size: 16px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; color: white; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--input-border); }
+        .nav-item { background: none; border: none; color: var(--text-label); font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: var(--primary); }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; background: #000; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align: center; color: var(--dark);">PANEL PENGURUS</h2>
-    
-    <div class="card">
-        <h3>Input Pembayaran</h3>
-        <div id="reader"></div>
-        <button class="btn-scan" onclick="startScanner()">BUKA KAMERA SCANNER</button>
-        
-        <label>Nama Warga (Bisa diketik manual)</label>
-        <input type="text" id="adminNama" placeholder="Ketik nama atau gunakan scan...">
-        
-        <label>Bulan Iuran</label>
-        <select id="adminBulan">
-            <option>Januari</option><option>Februari</option><option>Maret</option>
-            <option>April</option><option>Mei</option><option>Juni</option>
-            <option>Juli</option><option>Agustus</option><option>September</option>
-            <option>Oktober</option><option>November</option><option>Desember</option>
-        </select>
-
-        <label>Jumlah (Rp)</label>
-        <input type="number" id="adminJumlah" value="15000">
-
-        <button class="btn-save" id="btnSimpan" onclick="simpanData()">SIMPAN PEMBAYARAN</button>
+    <div class="top-bar">
+        <div><h1 class="brand-name">PLALANGAN</h1><div class="brand-sub">Iuran Digital</div></div>
+        <button id="themeBtn" onclick="toggleTheme()">🌙 Mode Gelap</button>
     </div>
 
-    <p style="text-align:center;"><a href="index.html" style="color: #7f8c8d; text-decoration: none; font-size: 14px;">← Kembali ke Halaman Utama</a></p>
+    <div id="tabInput" class="tab-content active-tab">
+        <div class="card">
+            <h3 style="margin-top:0;">📥 Input Iuran Warga</h3>
+            <div id="reader"></div>
+            <button class="btn" style="background: var(--secondary);" onclick="startScanner()">📷 BUKA KAMERA SCANNER</button>
+            <label>NAMA WARGA</label>
+            <input type="text" id="adminNama" placeholder="Ketik atau scan...">
+            <div style="display: flex; gap: 10px;">
+                <div style="flex: 2;"><label>BULAN</label><select id="adminBulan">
+                    <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option><option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option><option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
+                </select></div>
+                <div style="flex: 1;"><label>TAHUN</label><select id="adminTahun"></select></div>
+            </div>
+            <label>JUMLAH (RP)</label>
+            <input type="number" id="adminJumlah" value="15000">
+            <button class="btn" id="btnSimpan" style="background: var(--primary);" onclick="simpanIuran()">SIMPAN PEMBAYARAN</button>
+        </div>
+    </div>
+
+    <div id="tabInfo" class="tab-content">
+        <div class="card" style="background: var(--primary); color: white; text-align: center;">
+            <small>Total Saldo Kas</small>
+            <h2 id="saldoKas" style="margin: 5px 0; font-size: 28px;">Rp 0</h2>
+            <button onclick="muatDataKeuangan()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:5px; font-size:10px; cursor:pointer;">🔄 Perbarui</button>
+        </div>
+        <div class="card">
+            <h3 style="margin-top:0;">💸 Catat Uang Keluar</h3>
+            <label>KETERANGAN</label>
+            <input type="text" id="outKet" placeholder="Beli sapu, bayar listrik...">
+            <label>NOMINAL (RP)</label>
+            <input type="number" id="outJumlah" placeholder="0">
+            <button class="btn" id="btnKeluar" style="background: var(--danger);" onclick="simpanPengeluaran()">SIMPAN PENGELUARAN</button>
+        </div>
+        <div class="card">
+            <h4 style="margin-top:0;">Riwayat Transaksi</h4>
+            <ul id="listRiwayat" style="list-style: none; padding: 0; font-size: 13px;"></ul>
+        </div>
+    </div>
+
+    <nav class="nav-bottom">
+        <button class="nav-item active" onclick="switchTab('tabInput', this)"><span>📥</span><span>Input Iuran</span></button>
+        <button class="nav-item" onclick="switchTab('tabInfo', this)"><span>💸</span><span>Info Uang</span></button>
+    </nav>
 </div>
 
 <script>
-    const html5QrCode = new Html5Qrcode("reader");
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwR5EcNab7Pxu147_z3w0GtV32B3Fua_so4cdPsVo3czTbchzJhJRv89FvsUpYBY1-4/exec'; // GANTI INI!
 
-    function startScanner() {
-        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-        
-        html5QrCode.start({ facingMode: "environment" }, config, (decodedText) => {
-            document.getElementById('adminNama').value = decodedText;
-            html5QrCode.stop();
-            alert("Scan Berhasil: " + decodedText);
-        }).catch((err) => {
-            console.error("Gagal buka kamera:", err);
-            alert("Error: Pastikan izin kamera sudah diberikan.");
-        });
+    // --- TAB & THEME ---
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active-tab');
+        btn.classList.add('active');
+        if(tabId === 'tabInfo') muatDataKeuangan();
     }
 
-    async function simpanData() {
-        const nama = document.getElementById('adminNama').value;
-        const bulan = document.getElementById('adminBulan').value;
-        const jumlah = document.getElementById('adminJumlah').value;
-        const btn = document.getElementById('btnSimpan');
+    function toggleTheme() {
+        let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+        document.getElementById('themeBtn').innerHTML = theme === 'dark' ? "☀️ Mode Terang" : "🌙 Mode Gelap";
+    }
+    if (localStorage.getItem('theme') === 'dark') toggleTheme();
 
-        // Menggunakan Web App URL milikmu
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxeg9jNOP4rNJnpWpsV3hQDCtVFYdayUij4_cZ9-hqB65fFM6IRgC2Qh8FFvad9-2fT/exec';
+    // --- LOGIC TAHUN ---
+    const selectTahun = document.getElementById('adminTahun');
+    const thnNow = new Date().getFullYear();
+    for (let i = thnNow; i <= thnNow + 2; i++) {
+        let opt = document.createElement('option'); opt.value = i; opt.innerHTML = i;
+        selectTahun.appendChild(opt);
+    }
 
-        if(!nama) {
-            alert("Tolong isi nama warga (ketik manual atau scan)!");
-            return;
-        }
+    // --- SCANNER ---
+    const html5QrCode = new Html5Qrcode("reader");
+    function startScanner() {
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
+            document.getElementById('adminNama').value = text;
+            html5QrCode.stop();
+        }).catch(err => alert("Kamera Error"));
+    }
 
-        btn.innerText = "SEDANG MENGIRIM...";
-        btn.disabled = true;
-
+    // --- API CORE ---
+    async function sendData(payload, btnId) {
+        const btn = document.getElementById(btnId);
+        btn.disabled = true; btn.innerText = "PROSES...";
         try {
-            await fetch(scriptURL, {
-                method: 'POST',
-                mode: 'no-cors', 
-                body: JSON.stringify({ 
-                    nama: nama, 
-                    bulan: bulan, 
-                    jumlah: jumlah 
-                })
-            });
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("Berhasil Disimpan!");
+            return true;
+        } catch (e) { alert("Gagal Simpan"); return false;
+        } finally { btn.disabled = false; btn.innerText = "SIMPAN"; }
+    }
 
-            alert("BERHASIL! Data " + nama + " masuk ke Google Sheets.");
-            document.getElementById('adminNama').value = ""; // Kosongkan kolom setelah simpan
-            
-        } catch (error) {
-            console.error('Error!', error.message);
-            alert("Gagal kirim data. Cek koneksi.");
-        } finally {
-            btn.innerText = "SIMPAN PEMBAYARAN";
-            btn.disabled = false;
+    async function simpanIuran() {
+        const payload = {
+            nama: document.getElementById('adminNama').value,
+            bulan: document.getElementById('adminBulan').value + " " + document.getElementById('adminTahun').value,
+            jumlah: document.getElementById('adminJumlah').value,
+            tipe: "Masuk"
+        };
+        if(await sendData(payload, 'btnSimpan')) document.getElementById('adminNama').value = "";
+    }
+
+    async function simpanPengeluaran() {
+        const payload = {
+            keterangan: document.getElementById('outKet').value,
+            jumlah: document.getElementById('outJumlah').value,
+            tipe: "Keluar"
+        };
+        if(await sendData(payload, 'btnKeluar')) {
+            document.getElementById('outKet').value = ""; document.getElementById('outJumlah').value = "";
+            muatDataKeuangan();
         }
+    }
+
+    async function muatDataKeuangan() {
+        const saldoEl = document.getElementById('saldoKas');
+        const riwayatEl = document.getElementById('listRiwayat');
+        saldoEl.innerText = "...";
+        try {
+            const res = await fetch(scriptURL);
+            const data = await res.json();
+            saldoEl.innerText = "Rp " + data.saldo.toLocaleString('id-ID');
+            riwayatEl.innerHTML = data.riwayat.map(item => `
+                <li style="padding:10px 0; border-bottom:1px solid var(--input-border); display:flex; justify-content:space-between;">
+                    <div><b>${item.ket}</b><br><small>${item.tanggal}</small></div>
+                    <b style="color:${item.masuk > 0 ? 'var(--primary)' : 'var(--danger)'}">${item.masuk > 0 ? '+' : '-'}${ (item.masuk || item.keluar).toLocaleString() }</b>
+                </li>`).join('');
+        } catch (e) { saldoEl.innerText = "Error"; }
     }
 </script>
 </body>
