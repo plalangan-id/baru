@@ -32,7 +32,7 @@
         .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid var(--input-border); }
         .nav-item { background: none; border: none; color: var(--text-label); font-size: 11px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
         .nav-item.active { color: var(--primary); }
-        #reader { width: 100%; border-radius: 10px; overflow: hidden; background: #000; }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; background: #000; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -48,16 +48,29 @@
             <h3 style="margin-top:0;">📥 Input Iuran Warga</h3>
             <div id="reader"></div>
             <button class="btn" style="background: var(--secondary);" onclick="startScanner()">📷 BUKA KAMERA SCANNER</button>
+            
             <label>NAMA WARGA</label>
             <input type="text" id="adminNama" placeholder="Ketik atau scan...">
+            
             <div style="display: flex; gap: 10px;">
-                <div style="flex: 2;"><label>BULAN</label><select id="adminBulan">
-                    <option>Januari</option><option>Februari</option><option>Maret</option><option>April</option><option>Mei</option><option>Juni</option><option>Juli</option><option>Agustus</option><option>September</option><option>Oktober</option><option>November</option><option>Desember</option>
-                </select></div>
-                <div style="flex: 1;"><label>TAHUN</label><select id="adminTahun"></select></div>
+                <div style="flex: 2;">
+                    <label>BULAN</label>
+                    <select id="adminBulan">
+                        <option>Januari</option><option>Februari</option><option>Maret</option>
+                        <option>April</option><option>Mei</option><option>Juni</option>
+                        <option>Juli</option><option>Agustus</option><option>September</option>
+                        <option>Oktober</option><option>November</option><option>Desember</option>
+                    </select>
+                </div>
+                <div style="flex: 1;">
+                    <label>TAHUN</label>
+                    <select id="adminTahun"></select>
+                </div>
             </div>
+            
             <label>JUMLAH (RP)</label>
             <input type="number" id="adminJumlah" value="15000">
+            
             <button class="btn" id="btnSimpan" style="background: var(--primary);" onclick="simpanIuran()">SIMPAN PEMBAYARAN</button>
         </div>
     </div>
@@ -66,8 +79,9 @@
         <div class="card" style="background: var(--primary); color: white; text-align: center;">
             <small>Total Saldo Kas</small>
             <h2 id="saldoKas" style="margin: 5px 0; font-size: 28px;">Rp 0</h2>
-            <button onclick="muatDataKeuangan()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:5px; font-size:10px; cursor:pointer;">🔄 Perbarui</button>
+            <button onclick="muatDataKeuangan()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:5px; padding: 5px 10px; font-size:10px; cursor:pointer;">🔄 Perbarui Data</button>
         </div>
+        
         <div class="card">
             <h3 style="margin-top:0;">💸 Catat Uang Keluar</h3>
             <label>KETERANGAN</label>
@@ -76,22 +90,32 @@
             <input type="number" id="outJumlah" placeholder="0">
             <button class="btn" id="btnKeluar" style="background: var(--danger);" onclick="simpanPengeluaran()">SIMPAN PENGELUARAN</button>
         </div>
+
         <div class="card">
-            <h4 style="margin-top:0;">Riwayat Transaksi</h4>
+            <h4 style="margin-top:0;">Riwayat 10 Transaksi Terakhir</h4>
             <ul id="listRiwayat" style="list-style: none; padding: 0; font-size: 13px;"></ul>
         </div>
     </div>
 
     <nav class="nav-bottom">
-        <button class="nav-item active" onclick="switchTab('tabInput', this)"><span>📥</span><span>Input Iuran</span></button>
-        <button class="nav-item" onclick="switchTab('tabInfo', this)"><span>💸</span><span>Info Uang</span></button>
+        <button class="nav-item active" onclick="switchTab('tabInput', this)"><span>📥</span><span>Input</span></button>
+        <button class="nav-item" onclick="switchTab('tabInfo', this)"><span>💸</span><span>Info Kas</span></button>
     </nav>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxyq1kSN3ZMZzJYlBrPn4d-EjJCp-mMgLDpLEdYvTrlzFkCtNn_lZpNS23WJaOQiQ6q/exec'; // GANTI INI!
+    // PASTI KAN URL INI ADALAH URL DEPLOYMENT TERBARU (NEW VERSION)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbz0ppzkg9MO_bHBCk2JOPm8tUzOinLfe94PnUmc8D14ydZ2OEL6sjGLDzJXB9zfFZk/exec';
 
-    // --- TAB & THEME ---
+    // --- SETUP TAHUN ---
+    const selectTahun = document.getElementById('adminTahun');
+    const thnNow = new Date().getFullYear();
+    for (let i = thnNow; i <= thnNow + 1; i++) {
+        let opt = document.createElement('option'); opt.value = i; opt.innerHTML = i;
+        selectTahun.appendChild(opt);
+    }
+
+    // --- TEMA & TAB ---
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -108,38 +132,44 @@
     }
     if (localStorage.getItem('theme') === 'dark') toggleTheme();
 
-    // --- LOGIC TAHUN ---
-    const selectTahun = document.getElementById('adminTahun');
-    const thnNow = new Date().getFullYear();
-    for (let i = thnNow; i <= thnNow + 2; i++) {
-        let opt = document.createElement('option'); opt.value = i; opt.innerHTML = i;
-        selectTahun.appendChild(opt);
-    }
-
-    // --- SCANNER ---
+    // --- SCANNER QR ---
     const html5QrCode = new Html5Qrcode("reader");
     function startScanner() {
         html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
             document.getElementById('adminNama').value = text;
             html5QrCode.stop();
-        }).catch(err => alert("Kamera Error"));
+        }).catch(err => alert("Kamera Error/Izin Ditolak"));
     }
 
-    // --- API CORE ---
+    // --- KIRIM DATA KE GOOGLE ---
     async function sendData(payload, btnId) {
         const btn = document.getElementById(btnId);
-        btn.disabled = true; btn.innerText = "PROSES...";
+        btn.disabled = true; 
+        const txt = btn.innerText;
+        btn.innerText = "MENGIRIM...";
+
         try {
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("Berhasil Disimpan!");
+            // Kita gunakan fetch biasa. Jika browser jadul, mode no-cors tetap mengirim data.
+            await fetch(scriptURL, { 
+                method: 'POST', 
+                body: JSON.stringify(payload)
+            });
+            alert("Berhasil! Data telah diproses.");
             return true;
-        } catch (e) { alert("Gagal Simpan"); return false;
-        } finally { btn.disabled = false; btn.innerText = "SIMPAN"; }
+        } catch (e) {
+            alert("Koneksi bermasalah, tapi data mungkin terkirim. Cek Sheets.");
+            return true; 
+        } finally {
+            btn.disabled = false;
+            btn.innerText = txt;
+        }
     }
 
     async function simpanIuran() {
+        const nama = document.getElementById('adminNama').value;
+        if(!nama) return alert("Isi Nama Dulu!");
         const payload = {
-            nama: document.getElementById('adminNama').value,
+            nama: nama,
             bulan: document.getElementById('adminBulan').value + " " + document.getElementById('adminTahun').value,
             jumlah: document.getElementById('adminJumlah').value,
             tipe: "Masuk"
@@ -148,13 +178,13 @@
     }
 
     async function simpanPengeluaran() {
-        const payload = {
-            keterangan: document.getElementById('outKet').value,
-            jumlah: document.getElementById('outJumlah').value,
-            tipe: "Keluar"
-        };
+        const ket = document.getElementById('outKet').value;
+        const jml = document.getElementById('outJumlah').value;
+        if(!ket || !jml) return alert("Isi Keterangan & Nominal!");
+        const payload = { keterangan: ket, jumlah: jml, tipe: "Keluar" };
         if(await sendData(payload, 'btnKeluar')) {
-            document.getElementById('outKet').value = ""; document.getElementById('outJumlah').value = "";
+            document.getElementById('outKet').value = "";
+            document.getElementById('outJumlah').value = "";
             muatDataKeuangan();
         }
     }
@@ -164,15 +194,19 @@
         const riwayatEl = document.getElementById('listRiwayat');
         saldoEl.innerText = "...";
         try {
-            const res = await fetch(scriptURL);
+            const res = await fetch(scriptURL + "?t=" + new Date().getTime());
             const data = await res.json();
-            saldoEl.innerText = "Rp " + data.saldo.toLocaleString('id-ID');
+            saldoEl.innerText = "Rp " + (data.saldo || 0).toLocaleString('id-ID');
             riwayatEl.innerHTML = data.riwayat.map(item => `
                 <li style="padding:10px 0; border-bottom:1px solid var(--input-border); display:flex; justify-content:space-between;">
                     <div><b>${item.ket}</b><br><small>${item.tanggal}</small></div>
-                    <b style="color:${item.masuk > 0 ? 'var(--primary)' : 'var(--danger)'}">${item.masuk > 0 ? '+' : '-'}${ (item.masuk || item.keluar).toLocaleString() }</b>
+                    <b style="color:${item.masuk > 0 ? 'var(--primary)' : 'var(--danger)'}">
+                        ${item.masuk > 0 ? '+' : '-'}${ (item.masuk || item.keluar).toLocaleString() }
+                    </b>
                 </li>`).join('');
-        } catch (e) { saldoEl.innerText = "Error"; }
+        } catch (e) { 
+            saldoEl.innerText = "Error Koneksi"; 
+        }
     }
 </script>
 </body>
