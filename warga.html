@@ -18,21 +18,17 @@
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; transition: 0.3s; }
         .container { max-width: 480px; margin: auto; padding: 20px; }
         
-        /* Header Stats */
         .header-stats { background: var(--header-grad); border-radius: 25px; padding: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 25px; position: relative; }
         .theme-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 18px; }
         .stat-main { font-size: 28px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .stat-item small { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
 
-        /* Search Section */
         .search-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px var(--shadow); margin-bottom: 25px; }
         input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: var(--card-bg); color: var(--text); font-size: 16px; outline: none; }
         input:focus { border-color: var(--primary); }
         .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3); transition: 0.2s; }
-        .btn-check:active { transform: scale(0.98); }
 
-        /* Monthly Grid */
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .month-card { background: var(--card-bg); padding: 15px 5px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px var(--shadow); border: 2.5px solid transparent; transition: 0.3s; }
         .month-card.paid { border-color: var(--primary); background: rgba(0, 184, 148, 0.12); }
@@ -40,7 +36,6 @@
         .month-name { font-weight: bold; font-size: 12px; margin-top: 5px; }
         .status-icon { font-size: 22px; }
 
-        /* History Section */
         .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -52,7 +47,7 @@
         <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
         <div class="stat-main">
             <small style="display:block; font-size: 12px; font-weight: normal; margin-bottom: 5px;">Total Saldo Kas Desa</small>
-            <span id="saldoKas">Rp 0</span>
+            <span id="saldoKas">Memuat...</span>
         </div>
         <div class="stat-grid">
             <div class="stat-item">
@@ -68,8 +63,8 @@
 
     <div class="search-box">
         <label style="font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7;">CEK STATUS PEMBAYARAN</label>
-        <input type="text" id="namaWarga" placeholder="Ketik Nama Lengkap...">
-        <button class="btn-check" onclick="cekIuran()">LIHAT KARTU SAYA</button>
+        <input type="text" id="namaWarga" placeholder="Ketik Nama (Contoh: yuli)">
+        <button class="btn-check" id="btnCek" onclick="cekIuran()">LIHAT KARTU SAYA</button>
     </div>
 
     <div id="resultArea" style="display:none;" class="animate__animated animate__fadeIn">
@@ -86,6 +81,7 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwDJU9NRPmrHhFDHPYZ_mCpIX_xlNcMnz9Pl_w7JWcFEzBLJ8WzyeP2G14ah6bYyXRo/exec';
     const bulanDaftar = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    const bulanSingkat = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     window.onload = () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -104,6 +100,7 @@
         try {
             const res = await fetch(scriptURL + "?t=" + new Date().getTime());
             const data = await res.json();
+            window.semuaRiwayat = data.riwayat;
             
             document.getElementById('saldoKas').innerText = "Rp " + data.saldo.toLocaleString('id-ID');
             
@@ -112,12 +109,10 @@
             const tglSkg = now.getDate().toString().padStart(2, '0') + "/" + (now.getMonth()+1).toString().padStart(2, '0');
 
             document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
-                // Hitung saldo hari ini berdasarkan teks tanggal dd/mm/yy
                 if(h.tanggal && h.tanggal.startsWith(tglSkg)) { 
                     mHariIni += (h.masuk || 0); 
                     kHariIni += (h.keluar || 0); 
                 }
-                
                 const isMasuk = h.masuk > 0;
                 return `
                 <div class="history-card" style="border-left-color: ${isMasuk ? '#00b894' : '#d63031'}">
@@ -130,36 +125,43 @@
 
             document.getElementById('masukHariIni').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
             document.getElementById('keluarHariIni').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
-            
-            window.semuaRiwayat = data.riwayat; 
         } catch (e) { 
-            document.getElementById('listRiwayat').innerText = "Gagal memuat data. Periksa koneksi atau URL Script.";
-            console.error(e); 
+            document.getElementById('listRiwayat').innerText = "Gagal memuat data.";
         }
     }
 
-    function cekIuran() {
+    async function cekIuran() {
         const inputNama = document.getElementById('namaWarga').value.trim().toLowerCase();
         if(!inputNama) return alert("Silakan masukkan nama!");
+
+        const btn = document.getElementById('btnCek');
+        btn.innerText = "MENCARI...";
+        btn.disabled = true;
+
+        // Refresh data terbaru sebelum cek
+        await muatData();
 
         const grid = document.getElementById('monthGrid');
         grid.innerHTML = '';
         document.getElementById('resultArea').style.display = 'block';
         document.getElementById('welcomeNote').innerText = "KARTU IURAN: " + inputNama.toUpperCase();
 
-        // 1. Filter semua transaksi milik warga tersebut (berdasarkan nama)
         const dataWarga = (window.semuaRiwayat || []).filter(h => {
             const namaSheet = (h.nama || "").toLowerCase();
             return namaSheet.includes(inputNama) && h.masuk > 0;
         });
 
-        // 2. Loop 12 bulan untuk mengecek pembayaran
-        bulanDaftar.forEach(bln => {
+        bulanDaftar.forEach((bln, index) => {
             const sudahBayar = dataWarga.some(d => {
-                // Cek di kolom Periode (D) atau kolom Keterangan (G)
-                const inPeriode = (d.periode || "").toLowerCase().includes(bln.toLowerCase());
-                const inKet = (d.ket || "").toLowerCase().includes(bln.toLowerCase());
-                return inPeriode || inKet;
+                const p = (d.periode || "").toLowerCase();
+                const k = (d.ket || "").toLowerCase();
+                const bSingkat = bulanSingkat[index].toLowerCase();
+                
+                // Cek Nama Lengkap, Singkatan (Dec), atau Angka Bulan (/12/)
+                return p.includes(bln.toLowerCase()) || 
+                       p.includes(bSingkat) || 
+                       p.includes("/" + (index + 1).toString().padStart(2, '0')) ||
+                       k.includes(bln.toLowerCase());
             });
             
             const card = document.createElement('div');
@@ -172,9 +174,9 @@
             grid.appendChild(card);
         });
 
-        setTimeout(() => {
-            document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
-        }, 150);
+        btn.innerText = "LIHAT KARTU SAYA";
+        btn.disabled = false;
+        document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
     }
 </script>
 </body>
