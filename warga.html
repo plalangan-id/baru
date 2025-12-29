@@ -7,108 +7,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
-            --primary: #00b894; --danger: #d63031; --bg: #f8f9fa;
-            --card-bg: #ffffff; --text: #2d3436; --shadow: rgba(0,0,0,0.08);
+            --primary: #00b894; --danger: #d63031; --bg: #0f172a;
+            --card-bg: #1e293b; --text: #f8fafc; --shadow: rgba(0,0,0,0.3);
             --header-grad: linear-gradient(135deg, #0984e3, #6c5ce7);
         }
-        [data-theme="dark"] {
-            --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
-            --shadow: rgba(0,0,0,0.3);
-        }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; transition: 0.3s; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; }
         .container { max-width: 480px; margin: auto; padding: 20px; }
-        
-        .header-stats { background: var(--header-grad); border-radius: 25px; padding: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 25px; position: relative; }
-        .theme-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 18px; }
+        .header-stats { background: var(--header-grad); border-radius: 25px; padding: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.2); margin-bottom: 25px; }
         .stat-main { font-size: 28px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-item small { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
-
         .search-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px var(--shadow); margin-bottom: 25px; }
-        input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: var(--card-bg); color: var(--text); font-size: 16px; outline: none; }
-        input:focus { border-color: var(--primary); }
-        .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3); }
-
+        input { width: 100%; padding: 15px; border: 2px solid #334155; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: #0f172a; color: white; font-size: 16px; }
+        .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        .month-card { background: var(--card-bg); padding: 15px 5px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px var(--shadow); border: 2.5px solid transparent; transition: 0.3s; }
-        .month-card.paid { border-color: var(--primary); background: rgba(0, 184, 148, 0.15); }
-        .month-card.unpaid { border-color: var(--danger); background: rgba(214, 48, 49, 0.08); opacity: 0.6; }
+        .month-card { background: var(--card-bg); padding: 15px 5px; border-radius: 15px; text-align: center; border: 2.5px solid transparent; transition: 0.3s; }
+        .month-card.paid { border-color: var(--primary); background: rgba(0, 184, 148, 0.2); }
+        .month-card.unpaid { border-color: var(--danger); background: rgba(214, 48, 49, 0.1); opacity: 0.6; }
         .month-name { font-weight: bold; font-size: 12px; margin-top: 5px; }
         .status-icon { font-size: 22px; }
-
-        .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
+        .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header-stats">
-        <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
         <div class="stat-main">
-            <small style="display:block; font-size: 12px; font-weight: normal; margin-bottom: 5px;">Total Saldo Kas Desa</small>
+            <small style="display:block; font-size: 12px; font-weight: normal;">Total Saldo Kas Desa</small>
             <span id="saldoKas">Rp 0</span>
-        </div>
-        <div class="stat-grid">
-            <div class="stat-item">
-                <small>Masuk Hari Ini</small>
-                <div id="masukHariIni" style="color: #55efc4; font-weight: bold;">Rp 0</div>
-            </div>
-            <div class="stat-item">
-                <small>Keluar Hari Ini</small>
-                <div id="keluarHariIni" style="color: #fab1a0; font-weight: bold;">Rp 0</div>
-            </div>
         </div>
     </div>
 
     <div class="search-box">
-        <label style="font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7;">CEK STATUS PEMBAYARAN</label>
-        <input type="text" id="namaWarga" placeholder="Ketik Nama Anda...">
-        <button class="btn-check" onclick="cekIuran()">LIHAT KARTU SAYA</button>
+        <label style="font-size: 11px; font-weight: bold; margin-bottom: 10px; display: block; color: #94a3b8;">MASUKKAN NAMA WARGA</label>
+        <input type="text" id="namaWarga" placeholder="Contoh: yuli">
+        <button class="btn-check" onclick="cekIuran()">CEK STATUS KARTU</button>
     </div>
 
     <div id="resultArea" style="display:none;" class="animate__animated animate__fadeIn">
-        <h4 id="welcomeNote" style="margin-bottom: 15px; padding-left: 5px; border-left: 4px solid var(--primary);"></h4>
+        <h4 id="welcomeNote" style="margin-bottom: 15px; color: #55efc4;"></h4>
         <div class="month-grid" id="monthGrid"></div>
     </div>
 
     <div class="history-section" style="margin-top: 30px;">
         <h4 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 15px;">Riwayat Transaksi</h4>
-        <div id="listRiwayat">Memuat data...</div>
+        <div id="listRiwayat"></div>
     </div>
 </div>
 
 <script>
-    // PASTIKAN LINK INI ADALAH URL EXEC TERBARU ANDA
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwCO1DVXjtb5Z2Lzf_Dri4XN0vUuiCEcLwMkA3bSPCWZYPPk8N4Cfgqe-7YSid2hHwz/exec';
     const bulanDaftar = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-    window.onload = () => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        muatData();
-    };
-
-    function toggleTheme() {
-        const d = document.documentElement;
-        const newTheme = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        d.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-    }
+    window.onload = () => { muatData(); };
 
     async function muatData() {
         try {
-            // Anti-Cache: Mengambil data paling fresh dari Sheets
             const res = await fetch(scriptURL + "?t=" + new Date().getTime());
             const data = await res.json();
-            
             document.getElementById('saldoKas').innerText = "Rp " + data.saldo.toLocaleString('id-ID');
             window.semuaRiwayat = data.riwayat; 
 
-            let mHariIni = 0, kHariIni = 0;
-            const tglSkg = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit'});
-
             document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
-                if(h.tanggal.includes(tglSkg)) { mHariIni += h.masuk; kHariIni += h.keluar; }
                 const isMasuk = h.masuk > 0;
                 return `
                 <div class="history-card" style="border-left-color: ${isMasuk ? '#00b894' : '#d63031'}">
@@ -118,36 +77,27 @@
                     </div>
                 </div>`;
             }).join('');
-
-            document.getElementById('masukHariIni').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
-            document.getElementById('keluarHariIni').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
-            
-        } catch (e) { 
-            console.error(e);
-            document.getElementById('listRiwayat').innerText = "Gagal memuat data.";
-        }
+        } catch (e) { console.error(e); }
     }
 
     function cekIuran() {
         const inputNama = document.getElementById('namaWarga').value.trim().toLowerCase();
-        if(!inputNama) return alert("Silakan masukkan nama!");
+        if(!inputNama) return alert("Ketik nama dulu!");
 
         const grid = document.getElementById('monthGrid');
         grid.innerHTML = '';
         document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('welcomeNote').innerText = "STATUS KARTU: " + inputNama.toUpperCase();
+        document.getElementById('welcomeNote').innerText = "KARTU IURAN: " + inputNama.toUpperCase();
 
-        // Cari semua transaksi masuk yang namanya mengandung inputNama
+        // FILTER DATA (Mencari nama 'yuli' di database)
         const dataWarga = (window.semuaRiwayat || []).filter(h => {
-            const namaSheet = String(h.nama || "").toLowerCase();
-            return namaSheet.includes(inputNama) && h.masuk > 0;
+            return String(h.nama).toLowerCase().includes(inputNama) && h.masuk > 0;
         });
 
         bulanDaftar.forEach(bln => {
+            // CEK APAKAH ADA BULAN TERSEBUT DI KOLOM PERIODE
             const sudahBayar = dataWarga.some(d => {
-                const periodeSheet = String(d.periode || "").toLowerCase();
-                const ketSheet = String(d.ket || "").toLowerCase();
-                return periodeSheet.includes(bln.toLowerCase()) || ketSheet.includes(bln.toLowerCase());
+                return String(d.periode).toLowerCase().includes(bln.toLowerCase());
             });
             
             const card = document.createElement('div');
@@ -155,11 +105,10 @@
             card.innerHTML = `
                 <div class="status-icon">${sudahBayar ? '✅' : '❌'}</div>
                 <div class="month-name">${bln}</div>
-                <div style="font-size:9px; font-weight:bold;">${sudahBayar ? 'SUDAH BAYAR' : 'BELUM BAYAR'}</div>
+                <div style="font-size:9px;">${sudahBayar ? 'LUNAS' : 'BELUM'}</div>
             `;
             grid.appendChild(card);
         });
-        
         document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
     }
 </script>
