@@ -3,116 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cek Iuran Warga - Plalangan</title>
+    <title>Monitoring Iuran Warga - Plalangan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        :root { 
-            --bg: #f4f7f6; --card: #ffffff; --text: #2c3e50; 
-            --primary: #27ae60; --danger: #e74c3c; --border: #dddddd;
+        :root {
+            --primary: #00b894; --danger: #d63031; --bg: #f8f9fa;
+            --card-bg: #ffffff; --text: #2d3436; --shadow: rgba(0,0,0,0.08);
+            --header-grad: linear-gradient(135deg, #0984e3, #6c5ce7);
         }
         [data-theme="dark"] {
-            --bg: #121212; --card: #1e1e1e; --text: #ecf0f1; --border: #444444;
+            --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
+            --shadow: rgba(0,0,0,0.3);
         }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; transition: 0.3s; }
-        .container { max-width: 500px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; box-sizing: border-box; font-size: 16px; background: var(--card); color: var(--text); }
-        .btn-cek { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; transition: 0.3s; }
+        .container { max-width: 480px; margin: auto; padding: 20px; }
         
-        /* Grid Kartu Bulanan */
-        .grid-bulan { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .item-bulan { 
-            padding: 15px 5px; border-radius: 8px; text-align: center; 
-            font-size: 12px; font-weight: bold; color: white; transition: 0.3s;
-        }
-        .lunas { background: var(--primary); box-shadow: 0 4px 0 #1e8449; }
-        .belum { background: var(--danger); box-shadow: 0 4px 0 #c0392b; opacity: 0.8; }
-        
-        .status-info { margin-top: 20px; padding: 10px; border-radius: 8px; text-align: center; font-size: 14px; }
+        /* Header Stats */
+        .header-stats { background: var(--header-grad); border-radius: 25px; padding: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 25px; position: relative; }
+        .theme-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 18px; }
+        .stat-main { font-size: 28px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-item small { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
+
+        /* Search Section */
+        .search-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px var(--shadow); margin-bottom: 25px; }
+        input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: var(--card-bg); color: var(--text); font-size: 16px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3); transition: 0.2s; }
+        .btn-check:active { transform: scale(0.98); }
+
+        /* Monthly Grid */
+        .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        .month-card { background: var(--card-bg); padding: 15px 5px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px var(--shadow); border: 2.5px solid transparent; transition: 0.3s; }
+        .month-card.paid { border-color: var(--primary); background: rgba(0, 184, 148, 0.12); }
+        .month-card.unpaid { border-color: var(--danger); background: rgba(214, 48, 49, 0.08); opacity: 0.7; }
+        .month-name { font-weight: bold; font-size: 12px; margin-top: 5px; }
+        .status-icon { font-size: 22px; }
+
+        /* History Section */
+        .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align: center;">CEK IURAN WARGA</h2>
-    
-    <div class="card">
-        <label style="font-size:13px; font-weight:bold;">Masukkan Nama Lengkap:</label>
-        <input type="text" id="inputNama" placeholder="Contoh: Budi Santoso">
-        <button class="btn-cek" id="btnCek" onclick="cekStatus()">CARI DATA</button>
+    <div class="header-stats">
+        <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+        <div class="stat-main">
+            <small style="display:block; font-size: 12px; font-weight: normal; margin-bottom: 5px;">Total Saldo Kas Desa</small>
+            <span id="saldoKas">Rp 0</span>
+        </div>
+        <div class="stat-grid">
+            <div class="stat-item">
+                <small>Masuk Hari Ini</small>
+                <div id="masukHariIni" style="color: #55efc4; font-weight: bold;">Rp 0</div>
+            </div>
+            <div class="stat-item">
+                <small>Keluar Hari Ini</small>
+                <div id="keluarHariIni" style="color: #fab1a0; font-weight: bold;">Rp 0</div>
+            </div>
+        </div>
     </div>
 
-    <div id="hasilArea" style="display: none;">
-        <h3 id="displayNama" style="text-align:center; margin-bottom:5px;">-</h3>
-        <p style="text-align:center; font-size:12px; margin-top:0;">Status Pembayaran Tahun <span id="displayTahun"></span></p>
-        
-        <div class="grid-bulan" id="gridBulan">
-            </div>
+    <div class="search-box">
+        <label style="font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7;">CEK STATUS PEMBAYARAN</label>
+        <input type="text" id="namaWarga" placeholder="Ketik Nama Lengkap...">
+        <button class="btn-check" onclick="cekIuran()">LIHAT KARTU SAYA</button>
+    </div>
 
-        <div class="status-info" id="statusPesan"></div>
+    <div id="resultArea" style="display:none;" class="animate__animated animate__fadeIn">
+        <h4 id="welcomeNote" style="margin-bottom: 15px; padding-left: 5px; border-left: 4px solid var(--primary);"></h4>
+        <div class="month-grid" id="monthGrid"></div>
+    </div>
+
+    <div class="history-section" style="margin-top: 30px;">
+        <h4 style="border-left: 4px solid var(--primary); padding-left: 10px; margin-bottom: 15px;">Riwayat Transaksi</h4>
+        <div id="listRiwayat">Memuat data...</div>
     </div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz43CYxuCPDfIFbNG9i1pqNAb4DY2nlwbhO93oYtN2gRtchw4epTx5YAifTQcuxtEp3/exec';
-    const daftarBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    const tahunSekarang = new Date().getFullYear();
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwK86g10_A5wuoiiEaZuVOu2qEH4z4iAy4PaERS1bM66y8RRgx8XVij5KgXPA415B1f/exec';
+    const bulanDaftar = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-    // Otomatis Mode Gelap jika Admin pakai Mode Gelap
-    if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
+    window.onload = () => {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        muatData();
+    };
+
+    function toggleTheme() {
+        const d = document.documentElement;
+        const newTheme = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        d.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
     }
 
-    async function cekStatus() {
-        const nama = document.getElementById('inputNama').value.trim();
-        const btn = document.getElementById('btnCek');
-        if (!nama) return alert("Masukkan nama!");
-
-        btn.innerText = "MENCARI...";
-        btn.disabled = true;
-
+    async function muatData() {
         try {
-            const response = await fetch(`${scriptURL}?cekWarga=true&nama=${encodeURIComponent(nama)}`);
-            const resData = await response.json();
+            const res = await fetch(scriptURL + "?t=" + new Date().getTime());
+            const data = await res.json();
             
-            tampilkanGrid(nama, resData.bayar);
-        } catch (e) {
-            alert("Gagal terhubung ke server.");
-        } finally {
-            btn.innerText = "CARI DATA";
-            btn.disabled = false;
+            document.getElementById('saldoKas').innerText = "Rp " + data.saldo.toLocaleString('id-ID');
+            
+            let mHariIni = 0, kHariIni = 0;
+            const now = new Date();
+            const tglSkg = now.getDate().toString().padStart(2, '0') + "/" + (now.getMonth()+1).toString().padStart(2, '0');
+
+            document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
+                // Hitung saldo hari ini berdasarkan teks tanggal dd/mm/yy
+                if(h.tanggal && h.tanggal.startsWith(tglSkg)) { 
+                    mHariIni += (h.masuk || 0); 
+                    kHariIni += (h.keluar || 0); 
+                }
+                
+                const isMasuk = h.masuk > 0;
+                return `
+                <div class="history-card" style="border-left-color: ${isMasuk ? '#00b894' : '#d63031'}">
+                    <div><b>${h.ket || h.nama}</b><br><small>${h.tanggal}</small></div>
+                    <div style="font-weight:bold; color:${isMasuk ? '#00b894' : '#d63031'}">
+                        ${isMasuk ? '+' : '-'} ${ (h.masuk || h.keluar || 0).toLocaleString('id-ID') }
+                    </div>
+                </div>`;
+            }).join('');
+
+            document.getElementById('masukHariIni').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
+            document.getElementById('keluarHariIni').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
+            
+            window.semuaRiwayat = data.riwayat; 
+        } catch (e) { 
+            document.getElementById('listRiwayat').innerText = "Gagal memuat data. Periksa koneksi atau URL Script.";
+            console.error(e); 
         }
     }
 
-    function tampilkanGrid(nama, bulanBayar) {
-        const grid = document.getElementById('gridBulan');
-        const hasilArea = document.getElementById('hasilArea');
-        grid.innerHTML = "";
-        hasilArea.style.display = "block";
-        document.getElementById('displayNama').innerText = nama.toUpperCase();
-        document.getElementById('displayTahun').innerText = tahunSekarang;
+    function cekIuran() {
+        const inputNama = document.getElementById('namaWarga').value.trim().toLowerCase();
+        if(!inputNama) return alert("Silakan masukkan nama!");
 
-        let jumlahLunas = 0;
+        const grid = document.getElementById('monthGrid');
+        grid.innerHTML = '';
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('welcomeNote').innerText = "KARTU IURAN: " + inputNama.toUpperCase();
 
-        daftarBulan.forEach(bln => {
-            const formatBulanTahun = `${bln} ${tahunSekarang}`;
-            const isLunas = bulanBayar.includes(formatBulanTahun);
-            
-            const div = document.createElement('div');
-            div.className = `item-bulan ${isLunas ? 'lunas' : 'belum'}`;
-            div.innerHTML = `${bln.toUpperCase()}<br><small>${isLunas ? 'LUNAS' : 'BELUM'}</small>`;
-            
-            grid.appendChild(div);
-            if (isLunas) jumlahLunas++;
+        // 1. Filter semua transaksi milik warga tersebut (berdasarkan nama)
+        const dataWarga = (window.semuaRiwayat || []).filter(h => {
+            const namaSheet = (h.nama || "").toLowerCase();
+            return namaSheet.includes(inputNama) && h.masuk > 0;
         });
 
-        const pesan = document.getElementById('statusPesan');
-        if (jumlahLunas === 12) {
-            pesan.innerHTML = "🎉 Luar biasa! Iuran Anda tahun ini sudah Lunas.";
-            pesan.style.background = "rgba(39, 174, 96, 0.2)";
-        } else {
-            pesan.innerHTML = `Anda sudah membayar <b>${jumlahLunas} bulan</b>. Silakan lengkapi pembayaran Anda.`;
-            pesan.style.background = "rgba(231, 76, 60, 0.2)";
-        }
+        // 2. Loop 12 bulan untuk mengecek pembayaran
+        bulanDaftar.forEach(bln => {
+            const sudahBayar = dataWarga.some(d => {
+                // Cek di kolom Periode (D) atau kolom Keterangan (G)
+                const inPeriode = (d.periode || "").toLowerCase().includes(bln.toLowerCase());
+                const inKet = (d.ket || "").toLowerCase().includes(bln.toLowerCase());
+                return inPeriode || inKet;
+            });
+            
+            const card = document.createElement('div');
+            card.className = `month-card ${sudahBayar ? 'paid' : 'unpaid'}`;
+            card.innerHTML = `
+                <div class="status-icon">${sudahBayar ? '✅' : '❌'}</div>
+                <div class="month-name">${bln}</div>
+                <div style="font-size:9px; font-weight:bold;">${sudahBayar ? 'LUNAS' : 'BELUM'}</div>
+            `;
+            grid.appendChild(card);
+        });
+
+        setTimeout(() => {
+            document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+        }, 150);
     }
 </script>
 </body>
