@@ -3,292 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Iuran - Plalangan PRO</title>
+    <title>Admin Iuran PRO - Multifungsi</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root { 
             --primary: #00b894; --secondary: #0984e3; --danger: #d63031;
             --bg: #f0f2f5; --card-bg: #ffffff; --text-main: #2d3436;
-            --text-label: #636e72; --accent: #6c5ce7;
+            --text-label: #636e72; --accent: #6c5ce7; --input-bg: #ffffff;
         }
         [data-theme="dark"] {
             --bg: #0f172a; --card-bg: #1e293b; --text-main: #f8fafc;
             --text-label: #94a3b8; --input-bg: #334155;
         }
-
-        body { 
-            font-family: 'Inter', -apple-system, sans-serif; 
-            background: var(--bg); color: var(--text-main); 
-            margin: 0; padding: 0; transition: 0.3s;
-            display: flex; justify-content: center;
-        }
-
-        .app-container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 100px; }
-        
-        /* Header Styling */
-        header {
-            padding: 30px 20px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
-            border-bottom-left-radius: 30px;
-            border-bottom-right-radius: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-
-        .header-top { display: flex; justify-content: space-between; align-items: center; }
-        .stats-row { display: flex; gap: 10px; margin-top: 20px; }
-        .stat-card { 
-            background: rgba(255,255,255,0.2); flex: 1; padding: 15px; 
-            border-radius: 15px; backdrop-filter: blur(10px); 
-        }
-
-        /* Form Styling */
-        .content-area { padding: 20px; margin-top: -20px; }
-        .card { 
-            background: var(--card-bg); padding: 25px; border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px;
-        }
-
-        label { font-size: 12px; font-weight: 700; color: var(--text-label); text-transform: uppercase; margin-bottom: 8px; display: block; }
-        input, select { 
-            width: 100%; padding: 14px; border: 2px solid transparent; border-radius: 12px;
-            background: var(--bg); color: var(--text-main); font-size: 15px; margin-bottom: 15px;
-            transition: 0.3s; box-sizing: border-box;
-        }
-        input:focus { border-color: var(--primary); outline: none; background: var(--card-bg); }
-
-        .btn { 
-            width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; 
-            border: none; cursor: pointer; transition: 0.3s; display: flex; 
-            justify-content: center; align-items: center; gap: 10px;
-        }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3); }
-        .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--secondary); }
-
-        /* Navigation */
-        .nav-bar { 
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; background: var(--card-bg); 
-            display: flex; justify-content: space-around; padding: 15px; 
-            border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 1000;
-        }
-        .nav-link { 
-            background: none; border: none; color: var(--text-label); 
-            display: flex; flex-direction: column; align-items: center; font-size: 10px; gap: 5px; font-weight: 600;
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 100px; transition: 0.3s; }
+        .app-container { width: 100%; max-width: 480px; margin: auto; }
+        header { padding: 30px 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .stat-box { background: rgba(255,255,255,0.15); padding: 12px; border-radius: 15px; backdrop-filter: blur(5px); }
+        .stat-box small { font-size: 10px; opacity: 0.9; text-transform: uppercase; }
+        .content { padding: 20px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .tab-btn-group { display: flex; background: #eee; padding: 5px; border-radius: 12px; margin-bottom: 20px; }
+        .tab-btn-group button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; background: none; color: #777; font-weight: bold; }
+        .tab-btn-group button.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        label { font-size: 11px; font-weight: 700; color: var(--text-label); margin-bottom: 5px; display: block; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; background: var(--input-bg); color: var(--text-main); margin-bottom: 12px; box-sizing: border-box; font-size: 15px; }
+        .btn { width: 100%; padding: 15px; border-radius: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .btn-in { background: var(--primary); color: white; }
+        .btn-out { background: var(--danger); color: white; }
+        .nav-bar { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 85%; background: var(--card-bg); display: flex; justify-content: space-around; padding: 12px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .nav-link { background: none; border: none; color: var(--text-label); text-align: center; font-size: 11px; cursor: pointer; font-weight: bold; }
         .nav-link.active { color: var(--primary); }
-        .nav-link svg { width: 24px; height: 24px; }
-
-        #reader { border-radius: 15px; overflow: hidden; margin-bottom: 15px; border: 3px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <header>
-        <div class="header-top">
-            <div>
-                <h2 style="margin:0;">Halo, Admin 👋</h2>
-                <p style="margin:0; opacity: 0.8; font-size: 13px;">Kelola Iuran Desa Plalangan</p>
-            </div>
-            <button onclick="toggleTheme()" id="themeBtn" style="background:rgba(255,255,255,0.2); border:none; color:white; padding:8px 15px; border-radius:20px; cursor:pointer;">🌙</button>
+        <div style="display: flex; justify-content: space-between;">
+            <div><h3 style="margin:0;">PLALANGAN</h3><p style="margin:0; font-size: 12px; opacity: 0.8;">Admin Multifungsi</p></div>
+            <button onclick="toggleTheme()" style="background:none; border:none; font-size: 20px; cursor:pointer;">🌗</button>
         </div>
-        
-        <div class="stats-row">
-            <div class="stat-card">
-                <small>Total Kas</small>
-                <div id="saldoKas" style="font-size: 18px; font-weight: 800;">Rp 0</div>
-            </div>
-            <div class="stat-card">
-                <small>Bulan Ini</small>
-                <div id="totalBulanIni" style="font-size: 18px; font-weight: 800;">+ Rp 0</div>
-            </div>
+        <div class="stats-grid">
+            <div class="stat-box" style="grid-column: span 2;"><small>Total Saldo Kas</small><div id="saldoKas" style="font-size: 22px;">Rp 0</div></div>
+            <div class="stat-box"><small>Masuk Hari Ini</small><div id="totalMasuk">Rp 0</div></div>
+            <div class="stat-box"><small>Keluar Hari Ini</small><div id="totalKeluar">Rp 0</div></div>
         </div>
     </header>
 
-    <div class="content-area">
-        <div id="tabInput" class="tab-content animate__animated animate__fadeIn">
+    <div class="content">
+        <div id="tabMasuk" class="tab-content animate__animated animate__fadeIn">
             <div class="card">
-                <h3 style="margin-top:0;">📥 Input Iuran</h3>
-                <div id="reader" style="display:none;"></div>
-                <button class="btn btn-outline" id="btnScan" onclick="startScanner()" style="margin-bottom: 15px;">
-                    📷 Scan QR Warga
-                </button>
-                
-                <label>Nama Warga</label>
-                <input type="text" id="adminNama" placeholder="Masukkan nama atau scan QR...">
+                <div class="tab-btn-group">
+                    <button id="btnIuran" class="active" onclick="setInputMode('iuran')">Iuran Warga</button>
+                    <button id="btnLain" onclick="setInputMode('lain')">Pemasukan Lain</button>
+                </div>
 
-                <div style="display:flex; gap:10px;">
-                    <div style="flex:2">
-                        <label>Bulan</label>
-                        <select id="adminBulan"></select>
-                    </div>
-                    <div style="flex:1">
-                        <label>Tahun</label>
-                        <select id="adminTahun"></select>
+                <div id="sectionWarga">
+                    <div id="reader" style="display:none; margin-bottom:15px; border-radius:15px; overflow:hidden;"></div>
+                    <button class="btn" style="background:#f0f0f0; color:#333; margin-bottom:15px;" onclick="startScanner()">📷 Scan QR Nama</button>
+                    <label>Nama Warga</label>
+                    <input type="text" id="inpNama" placeholder="Ketik nama warga...">
+                </div>
+
+                <div id="sectionKategori">
+                    <label>Jenis Iuran / Pemasukan</label>
+                    <div style="display: flex; gap: 5px; margin-bottom: 12px;">
+                        <select id="inpKategori" style="margin-bottom: 0;">
+                            <option>Iuran Kas</option>
+                            <option>Iuran Sampah</option>
+                            <option>Iuran Keamanan</option>
+                            <option>Donasi/Sumbangan</option>
+                        </select>
+                        <button type="button" onclick="tambahKategori()" style="padding:0 15px; border-radius:10px; border:1px solid var(--primary); color:var(--primary); background:none; font-weight:bold; cursor:pointer;">+</button>
+                        <button type="button" onclick="hapusKategoriSekarang()" style="padding:0 15px; border-radius:10px; border:1px solid var(--danger); color:var(--danger); background:none; font-weight:bold; cursor:pointer;">×</button>
                     </div>
                 </div>
 
-                <label>Nominal Pembayaran</label>
-                <input type="number" id="adminJumlah" value="15000">
+                <div id="sectionPeriode">
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:1"><label>Bulan</label><select id="inpBulan"></select></div>
+                        <div style="flex:1"><label>Tahun</label><select id="inpTahun"></select></div>
+                    </div>
+                </div>
 
-                <button class="btn btn-primary" id="btnSimpan" onclick="confirmPayment()">
-                    🚀 Simpan Pembayaran
-                </button>
+                <div id="sectionKet" style="display:none;">
+                    <label>Keterangan Tambahan</label>
+                    <input type="text" id="inpKetMasuk" placeholder="Misal: Dari hamba allah...">
+                </div>
+
+                <label>Nominal (Rp)</label>
+                <input type="number" id="inpJumlahMasuk" value="15000">
+                <button class="btn btn-in" onclick="prosesSimpan('Masuk')">✅ Simpan Transaksi</button>
             </div>
         </div>
 
-        <div id="tabInfo" class="tab-content animate__animated animate__fadeIn" style="display:none;">
+        <div id="tabKeluar" class="tab-content animate__animated animate__fadeIn" style="display:none;">
             <div class="card">
-                <h3 style="margin-top:0;">💸 Catat Pengeluaran</h3>
-                <label>Kebutuhan / Keterangan</label>
-                <input type="text" id="outKet" placeholder="Contoh: Perbaikan Lampu Jalan">
+                <h3 style="margin-top:0;">📤 Catat Pengeluaran</h3>
+                <label>Keperluan / Keterangan</label>
+                <input type="text" id="outKet" placeholder="Beli sapu, bayar listrik...">
                 <label>Nominal (Rp)</label>
                 <input type="number" id="outJumlah" placeholder="0">
-                <button class="btn" style="background:var(--danger); color:white;" onclick="simpanPengeluaran()">
-                    Catat Pengeluaran
-                </button>
+                <button class="btn btn-out" onclick="prosesSimpan('Keluar')">Catat Pengeluaran</button>
             </div>
+        </div>
 
-            <h4 style="padding-left:10px;">Riwayat Transaksi</h4>
-            <div id="listRiwayat">
-                </div>
+        <div id="tabLaporan" class="tab-content animate__animated animate__fadeIn" style="display:none;">
+            <h4 style="margin-top:0;">Riwayat Transaksi</h4>
+            <div id="listRiwayat"></div>
         </div>
     </div>
 
     <nav class="nav-bar">
-        <button class="nav-link active" onclick="switchTab('tabInput', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            Input
-        </button>
-        <button class="nav-link" onclick="switchTab('tabInfo', this)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a4.5 4.5 0 0 0 0 9h5a4.5 4.5 0 0 1 0 9H6"/></svg>
-            Laporan
-        </button>
+        <button class="nav-link active" onclick="switchTab('tabMasuk', this)">📥 MASUK</button>
+        <button class="nav-link" onclick="switchTab('tabKeluar', this)">📤 KELUAR</button>
+        <button class="nav-link" onclick="switchTab('tabLaporan', this)">📋 LAPORAN</button>
     </nav>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbz43CYxuCPDfIFbNG9i1pqNAb4DY2nlwbhO93oYtN2gRtchw4epTx5YAifTQcuxtEp3/exec';
+    // MASUKKAN URL SCRIPT ANDA DI SINI
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwK86g10_A5wuoiiEaZuVOu2qEH4z4iAy4PaERS1bM66y8RRgx8XVij5KgXPA415B1f/exec';
 
-    // Inisialisasi Dropdown Bulan & Tahun
+    let modeInput = 'iuran';
     const bulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-    const bulanSelect = document.getElementById('adminBulan');
-    const tahunSelect = document.getElementById('adminTahun');
-    const skrg = new Date();
 
-    bulanIndo.forEach((b, i) => {
-        let opt = new Option(b, b);
-        if(i === skrg.getMonth()) opt.selected = true;
-        bulanSelect.add(opt);
-    });
+    window.onload = () => {
+        // Logika Ingat Tema
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
 
-    for(let i = skrg.getFullYear(); i <= skrg.getFullYear()+1; i++) {
-        tahunSelect.add(new Option(i, i));
-    }
+        const bSel = document.getElementById('inpBulan');
+        const tSel = document.getElementById('inpTahun');
+        const d = new Date();
+        bulanIndo.forEach((b, i) => bSel.add(new Option(b, b, i === d.getMonth(), i === d.getMonth())));
+        for(let i=d.getFullYear(); i<=d.getFullYear()+1; i++) tSel.add(new Option(i, i));
+        muatData();
+    };
 
     function switchTab(id, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
         document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
         document.getElementById(id).style.display = 'block';
         el.classList.add('active');
-        if(id === 'tabInfo') muatDataKeuangan();
+        muatData();
     }
 
-    function toggleTheme() {
-        const doc = document.documentElement;
-        const isDark = doc.getAttribute('data-theme') === 'dark';
-        doc.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        document.getElementById('themeBtn').innerText = isDark ? '🌙' : '☀️';
+    function setInputMode(m) {
+        modeInput = m;
+        document.getElementById('btnIuran').className = m === 'iuran' ? 'active' : '';
+        document.getElementById('btnLain').className = m === 'lain' ? 'active' : '';
+        document.getElementById('sectionWarga').style.display = m === 'iuran' ? 'block' : 'none';
+        document.getElementById('sectionPeriode').style.display = m === 'iuran' ? 'block' : 'none';
+        document.getElementById('sectionKet').style.display = m === 'lain' ? 'block' : 'none';
     }
 
-    // Fungsi Scanner dengan UI Auto-Close
-    const html5QrCode = new Html5Qrcode("reader");
-    function startScanner() {
-        const readerDiv = document.getElementById('reader');
-        readerDiv.style.display = 'block';
-        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
-            document.getElementById('adminNama').value = text;
-            html5QrCode.stop();
-            readerDiv.style.display = 'none';
-        }).catch(err => alert("Kamera Error"));
-    }
-
-    // Fungsi Konfirmasi (Fitur Baru)
-    function confirmPayment() {
-        const nama = document.getElementById('adminNama').value;
-        const jml = document.getElementById('adminJumlah').value;
-        if(!nama) return alert("Silahkan isi nama warga!");
-        
-        if(confirm(`Konfirmasi pembayaran atas nama ${nama} sebesar Rp ${parseInt(jml).toLocaleString()}?`)) {
-            simpanIuran();
+    function tambahKategori() {
+        const k = prompt("Nama Iuran Baru:");
+        if(k && k.trim() !== "") {
+            const sel = document.getElementById('inpKategori');
+            sel.add(new Option(k, k, true, true));
         }
     }
 
-    async function simpanIuran() {
-        const payload = {
-            nama: document.getElementById('adminNama').value,
-            bulan: bulanSelect.value + " " + tahunSelect.value,
-            jumlah: document.getElementById('adminJumlah').value,
-            tipe: "Masuk"
-        };
-        await executeUpload(payload, 'btnSimpan');
+    function hapusKategoriSekarang() {
+        const sel = document.getElementById('inpKategori');
+        if (sel.options.length <= 1) {
+            alert("Harus ada minimal satu jenis iuran!");
+            return;
+        }
+        if (confirm("Hapus jenis '" + sel.value + "' dari daftar?")) {
+            sel.remove(sel.selectedIndex);
+        }
     }
 
-    async function simpanPengeluaran() {
-        const ket = document.getElementById('outKet').value;
-        const jml = document.getElementById('outJumlah').value;
-        if(!ket || !jml) return alert("Lengkapi data pengeluaran!");
-        
-        const payload = { keterangan: ket, jumlah: jml, tipe: "Keluar" };
-        await executeUpload(payload, 'btnKeluar');
-    }
+    async function prosesSimpan(tipe) {
+        let payload = { tipe: tipe };
+        if(tipe === 'Masuk') {
+            payload.jumlah = document.getElementById('inpJumlahMasuk').value;
+            payload.kategori = document.getElementById('inpKategori').value;
+            if(modeInput === 'iuran') {
+                payload.nama = document.getElementById('inpNama').value;
+                payload.bulan = document.getElementById('inpBulan').value + " " + document.getElementById('inpTahun').value;
+                if(!payload.nama) return alert("Nama warga harus diisi!");
+            } else {
+                payload.keterangan = document.getElementById('inpKetMasuk').value;
+                if(!payload.keterangan) return alert("Keterangan harus diisi!");
+            }
+        } else {
+            payload.jumlah = document.getElementById('outJumlah').value;
+            payload.keterangan = document.getElementById('outKet').value;
+            if(!payload.jumlah || !payload.keterangan) return alert("Lengkapi data!");
+        }
 
-    async function executeUpload(payload, btnId) {
-        const btn = document.getElementById(btnId);
-        const originalText = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = "⌛ Memproses...";
-
+        if(!confirm("Simpan transaksi ini?")) return;
         try {
             await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-            alert("✅ Data Berhasil Tersimpan!");
-            location.reload(); // Refresh untuk update dashboard
-        } catch (e) {
-            alert("❌ Gagal mengirim data.");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
+            alert("✅ Berhasil disimpan!");
+            location.reload();
+        } catch (e) { alert("❌ Gagal terhubung ke server."); }
     }
 
-    async function muatDataKeuangan() {
-        const listEl = document.getElementById('listRiwayat');
-        listEl.innerHTML = "<p style='text-align:center;'>Memuat data...</p>";
-        
+    async function muatData() {
         try {
             const res = await fetch(scriptURL + "?t=" + new Date().getTime());
             const data = await res.json();
-            
             document.getElementById('saldoKas').innerText = "Rp " + (data.saldo || 0).toLocaleString('id-ID');
             
-            listEl.innerHTML = data.riwayat.map(item => `
-                <div class="card" style="padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <div style="font-weight:800; font-size:14px;">${item.ket}</div>
-                        <small style="color:var(--text-label)">${item.tanggal}</small>
+            let mHariIni = 0, kHariIni = 0;
+            const tglSkg = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit'});
+
+            document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
+                if(h.tanggal.includes(tglSkg)) { 
+                    mHariIni += h.masuk; kHariIni += h.keluar; 
+                }
+                const isMasuk = h.masuk > 0;
+                return `
+                <div class="card" style="padding:15px; margin-bottom:10px; border-left:5px solid ${isMasuk ? '#00b894' : '#d63031'}">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div><b>${h.ket}</b><br><small>${h.tanggal}</small></div>
+                        <div style="font-weight:bold; color:${isMasuk ? '#00b894' : '#d63031'}">
+                            ${isMasuk ? '+' : '-'} ${ (h.masuk || h.keluar).toLocaleString('id-ID') }
+                        </div>
                     </div>
-                    <div style="font-weight:800; color:${item.masuk > 0 ? 'var(--primary)' : 'var(--danger)'}">
-                        ${item.masuk > 0 ? '+' : '-'} Rp ${(item.masuk || item.keluar).toLocaleString()}
-                    </div>
-                </div>
-            `).join('');
-        } catch (e) {
-            listEl.innerHTML = "Gagal memuat riwayat.";
-        }
+                </div>`;
+            }).join('');
+
+            document.getElementById('totalMasuk').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
+            document.getElementById('totalKeluar').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
+        } catch (e) {}
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+    function startScanner() {
+        const r = document.getElementById('reader');
+        r.style.display = 'block';
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 }, (text) => {
+            document.getElementById('inpNama').value = text;
+            html5QrCode.stop(); r.style.display = 'none';
+        }).catch(() => {});
+    }
+
+    function toggleTheme() {
+        const d = document.documentElement;
+        const currentTheme = d.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        d.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
     }
 </script>
-
 </body>
 </html>
