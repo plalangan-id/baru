@@ -38,6 +38,12 @@
 
         .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* --- TAMBAHKAN DI SINI --- */
+        #listRiwayat {
+            max-height: 400px; /* Batasi tinggi kotak riwayat */
+            overflow-y: auto;  /* Munculkan scroll jika data lebih dari 400px */
+            padding-right: 10px;
+            margin-top: 10
     </style>
 </head>
 <body>
@@ -79,7 +85,7 @@
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbysbk59aNgR782jAtqX1wFvhtNOU6zpKwCwXqG5NG2TnjiQcxtfqQkxcMXjhhkjf6ID/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwDJU9NRPmrHhFDHPYZ_mCpIX_xlNcMnz9Pl_w7JWcFEzBLJ8WzyeP2G14ah6bYyXRo/exec';
     const bulanDaftar = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const bulanSingkat = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
