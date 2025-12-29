@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Iuran PRO - Multifungsi</title>
+    <title>Admin Iuran PLALANGAN</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
@@ -24,6 +24,18 @@
         .stat-box small { font-size: 10px; opacity: 0.9; text-transform: uppercase; }
         .content { padding: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        /* GAYA KOTAK RIWAYAT (SCROLL BOX) */
+        #listRiwayat {
+            max-height: 400px; 
+            overflow-y: auto;  
+            padding: 10px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 15px;
+            border: 1px dashed #ccc;
+        }
+        [data-theme="dark"] #listRiwayat { background: rgba(255,255,255,0.05); border-color: #444; }
+
         .tab-btn-group { display: flex; background: #eee; padding: 5px; border-radius: 12px; margin-bottom: 20px; }
         .tab-btn-group button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; background: none; color: #777; font-weight: bold; }
         .tab-btn-group button.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -59,14 +71,12 @@
                     <button id="btnIuran" class="active" onclick="setInputMode('iuran')">Iuran Warga</button>
                     <button id="btnLain" onclick="setInputMode('lain')">Pemasukan Lain</button>
                 </div>
-
                 <div id="sectionWarga">
                     <div id="reader" style="display:none; margin-bottom:15px; border-radius:15px; overflow:hidden;"></div>
                     <button class="btn" style="background:#f0f0f0; color:#333; margin-bottom:15px;" onclick="startScanner()">📷 Scan QR Nama</button>
                     <label>Nama Warga</label>
                     <input type="text" id="inpNama" placeholder="Ketik nama warga...">
                 </div>
-
                 <div id="sectionKategori">
                     <label>Jenis Iuran / Pemasukan</label>
                     <div style="display: flex; gap: 5px; margin-bottom: 12px;">
@@ -80,19 +90,16 @@
                         <button type="button" onclick="hapusKategoriSekarang()" style="padding:0 15px; border-radius:10px; border:1px solid var(--danger); color:var(--danger); background:none; font-weight:bold; cursor:pointer;">×</button>
                     </div>
                 </div>
-
                 <div id="sectionPeriode">
                     <div style="display:flex; gap:10px;">
                         <div style="flex:1"><label>Bulan</label><select id="inpBulan"></select></div>
                         <div style="flex:1"><label>Tahun</label><select id="inpTahun"></select></div>
                     </div>
                 </div>
-
                 <div id="sectionKet" style="display:none;">
                     <label>Keterangan Tambahan</label>
                     <input type="text" id="inpKetMasuk" placeholder="Misal: Dari hamba allah...">
                 </div>
-
                 <label>Nominal (Rp)</label>
                 <input type="number" id="inpJumlahMasuk" value="15000">
                 <button class="btn btn-in" onclick="prosesSimpan('Masuk')">✅ Simpan Transaksi</button>
@@ -112,7 +119,7 @@
 
         <div id="tabLaporan" class="tab-content animate__animated animate__fadeIn" style="display:none;">
             <h4 style="margin-top:0;">Riwayat Transaksi</h4>
-            <div id="listRiwayat"></div>
+            <div id="listRiwayat">Memuat data...</div>
         </div>
     </div>
 
@@ -124,17 +131,13 @@
 </div>
 
 <script>
-    // MASUKKAN URL SCRIPT ANDA DI SINI
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbysbk59aNgR782jAtqX1wFvhtNOU6zpKwCwXqG5NG2TnjiQcxtfqQkxcMXjhhkjf6ID/exec';
-
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwDJU9NRPmrHhFDHPYZ_mCpIX_xlNcMnz9Pl_w7JWcFEzBLJ8WzyeP2G14ah6bYyXRo/exec';
     let modeInput = 'iuran';
     const bulanIndo = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
     window.onload = () => {
-        // Logika Ingat Tema
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-
         const bSel = document.getElementById('inpBulan');
         const tSel = document.getElementById('inpTahun');
         const d = new Date();
@@ -170,13 +173,8 @@
 
     function hapusKategoriSekarang() {
         const sel = document.getElementById('inpKategori');
-        if (sel.options.length <= 1) {
-            alert("Harus ada minimal satu jenis iuran!");
-            return;
-        }
-        if (confirm("Hapus jenis '" + sel.value + "' dari daftar?")) {
-            sel.remove(sel.selectedIndex);
-        }
+        if (sel.options.length <= 1) return alert("Harus ada minimal satu jenis iuran!");
+        if (confirm("Hapus jenis '" + sel.value + "' dari daftar?")) sel.remove(sel.selectedIndex);
     }
 
     async function prosesSimpan(tipe) {
@@ -197,7 +195,6 @@
             payload.keterangan = document.getElementById('outKet').value;
             if(!payload.jumlah || !payload.keterangan) return alert("Lengkapi data!");
         }
-
         if(!confirm("Simpan transaksi ini?")) return;
         try {
             await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
@@ -206,35 +203,49 @@
         } catch (e) { alert("❌ Gagal terhubung ke server."); }
     }
 
-    async function muatData() {
-        try {
-            const res = await fetch(scriptURL + "?t=" + new Date().getTime());
-            const data = await res.json();
-            document.getElementById('saldoKas').innerText = "Rp " + (data.saldo || 0).toLocaleString('id-ID');
+async function muatData() {
+    try {
+        const res = await fetch(scriptURL + "?t=" + new Date().getTime());
+        const data = await res.json();
+        
+        document.getElementById('saldoKas').innerText = "Rp " + (data.saldo || 0).toLocaleString('id-ID');
+        
+        let mHariIni = 0, kHariIni = 0;
+        const skrg = new Date();
+        
+        // Membuat format pencocokan: "30/12/2025" atau "30/12/25"
+        const d = skrg.getDate().toString().padStart(2, '0');
+        const m = (skrg.getMonth() + 1).toString().padStart(2, '0');
+        const yFull = skrg.getFullYear().toString();
+        const yShort = yFull.substring(2);
+
+        document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
+            // Logika Deteksi Hari Ini:
+            // Mengecek apakah string tanggal mengandung "30/12/25" ATAU "30/12/2025"
+            if(h.tanggal.includes(`${d}/${m}/${yShort}`) || h.tanggal.includes(`${d}/${m}/${yFull}`)) { 
+                mHariIni += (h.masuk || 0); 
+                kHariIni += (h.keluar || 0); 
+            }
             
-            let mHariIni = 0, kHariIni = 0;
-            const tglSkg = new Date().toLocaleDateString('id-ID', {day:'2-digit', month:'2-digit'});
-
-            document.getElementById('listRiwayat').innerHTML = data.riwayat.map(h => {
-                if(h.tanggal.includes(tglSkg)) { 
-                    mHariIni += h.masuk; kHariIni += h.keluar; 
-                }
-                const isMasuk = h.masuk > 0;
-                return `
-                <div class="card" style="padding:15px; margin-bottom:10px; border-left:5px solid ${isMasuk ? '#00b894' : '#d63031'}">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div><b>${h.ket}</b><br><small>${h.tanggal}</small></div>
-                        <div style="font-weight:bold; color:${isMasuk ? '#00b894' : '#d63031'}">
-                            ${isMasuk ? '+' : '-'} ${ (h.masuk || h.keluar).toLocaleString('id-ID') }
-                        </div>
+            const isMasuk = h.masuk > 0;
+            return `
+            <div class="card" style="padding:15px; margin-bottom:10px; border-left:5px solid ${isMasuk ? '#00b894' : '#d63031'}">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>${h.ket}</b><br><small>${h.tanggal}</small></div>
+                    <div style="font-weight:bold; color:${isMasuk ? '#00b894' : '#d63031'}">
+                        ${isMasuk ? '+' : '-'} ${(h.masuk || h.keluar).toLocaleString('id-ID')}
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            </div>`;
+        }).join('');
 
-            document.getElementById('totalMasuk').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
-            document.getElementById('totalKeluar').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
-        } catch (e) {}
+        document.getElementById('totalMasuk').innerText = "Rp " + mHariIni.toLocaleString('id-ID');
+        document.getElementById('totalKeluar').innerText = "Rp " + kHariIni.toLocaleString('id-ID');
+        
+    } catch (e) { 
+        document.getElementById('listRiwayat').innerText = "Gagal memuat data riwayat."; 
     }
+}
 
     const html5QrCode = new Html5Qrcode("reader");
     function startScanner() {
@@ -248,8 +259,7 @@
 
     function toggleTheme() {
         const d = document.documentElement;
-        const currentTheme = d.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const newTheme = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         d.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
     }
