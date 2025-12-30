@@ -4,27 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring Iuran Warga - Plalangan</title>
+    
+    <link rel="icon" type="image/png" href="https://i.postimg.cc/mZ3HyBhm/feda42e8-0758-494d-866f-8c32a625e9b1.png">
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/mZ3HyBhm/feda42e8-0758-494d-866f-8c32a625e9b1.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PLALANGAN">
+    <meta name="theme-color" content="#00b894">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
             --primary: #00b894; --danger: #d63031; --bg: #f8f9fa;
             --card-bg: #ffffff; --text: #2d3436; --shadow: rgba(0,0,0,0.08);
-            --header-grad: linear-gradient(135deg, #0984e3, #6c5ce7);
+            --header-grad: linear-gradient(135deg, #00b894, #6c5ce7);
         }
         [data-theme="dark"] {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
             --shadow: rgba(0,0,0,0.3);
         }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 50px; transition: 0.3s; }
+        
+        header { 
+            padding: 20px; 
+            background: var(--header-grad); 
+            color: white; 
+            border-bottom-left-radius: 30px; 
+            border-bottom-right-radius: 30px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+        }
+
         .container { max-width: 480px; margin: auto; padding: 20px; }
         
-        .header-stats { background: var(--header-grad); border-radius: 25px; padding: 25px; color: white; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 25px; position: relative; }
-        .theme-toggle { position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 18px; }
-        .stat-main { font-size: 28px; font-weight: 800; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-item small { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
+        /* Tombol Mode Malam di Atas */
+        .theme-toggle { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 16px; display: block; margin: 0 0 15px auto; }
+        
+        /* Grid untuk Nama & Saldo (Atas) dan Statistik (Bawah) */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        
+        /* Sisi Kiri (Nama & Masuk) */
+        .stat-left { text-align: left; }
+        /* Sisi Kanan (Saldo & Keluar) */
+        .stat-right { text-align: right; }
 
-        .search-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px var(--shadow); margin-bottom: 25px; }
+        .stat-box { background: rgba(255,255,255,0.15); padding: 12px; border-radius: 15px; backdrop-filter: blur(5px); margin-top: 8px; }
+        .stat-box small { font-size: 10px; opacity: 0.9; text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+        .search-box { background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px var(--shadow); margin-top: 25px; margin-bottom: 25px; }
         input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: var(--card-bg); color: var(--text); font-size: 16px; outline: none; }
         input:focus { border-color: var(--primary); }
         .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3); transition: 0.2s; }
@@ -38,38 +64,42 @@
 
         .history-card { background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px var(--shadow); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--primary); animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* --- TAMBAHKAN DI SINI --- */
-        #listRiwayat {
-            max-height: 400px; /* Batasi tinggi kotak riwayat */
-            overflow-y: auto;  /* Munculkan scroll jika data lebih dari 400px */
-            padding-right: 10px;
-            margin-top: 10
+        
+        #listRiwayat { max-height: 400px; overflow-y: auto; padding-right: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-stats">
-        <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
-        <div class="stat-main">
-            <small style="display:block; font-size: 12px; font-weight: normal; margin-bottom: 5px;">Total Saldo Kas Desa</small>
-            <span id="saldoKas">Memuat...</span>
-        </div>
-        <div class="stat-grid">
-            <div class="stat-item">
+<header>
+    <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+
+    <div class="stat-grid">
+        <div class="stat-left">
+            <h3 style="margin:0; font-size: 18px; letter-spacing: 1px;">PLALANGAN</h3>
+            <p style="margin:0 0 10px 0; font-size: 10px; opacity: 0.8;">Monitoring Iuran</p>
+            
+            <div class="stat-box">
                 <small>Masuk Hari Ini</small>
-                <div id="masukHariIni" style="color: #55efc4; font-weight: bold;">Rp 0</div>
+                <div id="masukHariIni" style="font-weight: bold; color: #55efc4; font-size: 14px;">Rp 0</div>
             </div>
-            <div class="stat-item">
+        </div>
+
+        <div class="stat-right">
+            <small style="font-size: 10px; opacity: 0.9; display: block; text-transform: uppercase;">Total Saldo Kas</small>
+            <span id="saldoKas" style="font-size: 18px; font-weight: 800;">Memuat...</span>
+            
+            <div class="stat-box" style="text-align: right;">
                 <small>Keluar Hari Ini</small>
-                <div id="keluarHariIni" style="color: #fab1a0; font-weight: bold;">Rp 0</div>
+                <div id="keluarHariIni" style="font-weight: bold; color: #fab1a0; font-size: 14px;">Rp 0</div>
             </div>
         </div>
     </div>
+</header>
 
+<div class="container">
     <div class="search-box">
-        <label style="font-size: 12px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7;">CEK STATUS PEMBAYARAN</label>
-        <input type="text" id="namaWarga" placeholder="Ketik Nama (Contoh: yuli)">
+        <label style="font-size: 11px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7; text-transform: uppercase;">Cek Kartu Pembayaran</label>
+        <input type="text" id="namaWarga" placeholder="Ketik Nama Anda">
         <button class="btn-check" id="btnCek" onclick="cekIuran()">LIHAT KARTU SAYA</button>
     </div>
 
@@ -144,7 +174,6 @@
         btn.innerText = "MENCARI...";
         btn.disabled = true;
 
-        // Refresh data terbaru sebelum cek
         await muatData();
 
         const grid = document.getElementById('monthGrid');
@@ -163,7 +192,6 @@
                 const k = (d.ket || "").toLowerCase();
                 const bSingkat = bulanSingkat[index].toLowerCase();
                 
-                // Cek Nama Lengkap, Singkatan (Dec), atau Angka Bulan (/12/)
                 return p.includes(bln.toLowerCase()) || 
                        p.includes(bSingkat) || 
                        p.includes("/" + (index + 1).toString().padStart(2, '0')) ||
