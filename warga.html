@@ -12,12 +12,16 @@
     <meta name="apple-mobile-web-app-title" content="PLALANGAN">
     <meta name="theme-color" content="#00b894">
 
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         :root {
             --primary: #00b894; --danger: #d63031; --bg: #f8f9fa;
             --card-bg: #ffffff; --text: #2d3436; --shadow: rgba(0,0,0,0.08);
             --header-grad: linear-gradient(135deg, #00b894, #6c5ce7);
+            /* Sentuhan Pink Halus Sesuai Diskusi Sebelumnya */
+            --accent-pink: #fd79a8;
         }
         [data-theme="dark"] {
             --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc;
@@ -36,15 +40,10 @@
 
         .container { max-width: 480px; margin: auto; padding: 20px; }
         
-        /* Tombol Mode Malam di Atas */
         .theme-toggle { background: rgba(255,255,255,0.2); border: none; border-radius: 50%; width: 35px; height: 35px; color: white; cursor: pointer; font-size: 16px; display: block; margin: 0 0 15px auto; }
         
-        /* Grid untuk Nama & Saldo (Atas) dan Statistik (Bawah) */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        
-        /* Sisi Kiri (Nama & Masuk) */
         .stat-left { text-align: left; }
-        /* Sisi Kanan (Saldo & Keluar) */
         .stat-right { text-align: right; }
 
         .stat-box { background: rgba(255,255,255,0.15); padding: 12px; border-radius: 15px; backdrop-filter: blur(5px); margin-top: 8px; }
@@ -54,6 +53,15 @@
         input { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 12px; margin-bottom: 12px; box-sizing: border-box; background: var(--card-bg); color: var(--text); font-size: 16px; outline: none; }
         input:focus { border-color: var(--primary); }
         .btn-check { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3); transition: 0.2s; }
+
+        /* CSS BARU UNTUK TOMBOL SCAN */
+        .btn-scan { 
+            width: 100%; padding: 10px; border: 2px dashed var(--accent-pink); border-radius: 12px; 
+            background: transparent; color: var(--accent-pink); font-weight: bold; cursor: pointer; 
+            font-size: 14px; margin-bottom: 15px; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-scan:hover { background: var(--accent-pink); color: white; }
+        #reader { width: 100%; border-radius: 15px; overflow: hidden; margin-bottom: 15px; display: none; border: 2px solid var(--primary); }
 
         .month-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         .month-card { background: var(--card-bg); padding: 15px 5px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px var(--shadow); border: 2.5px solid transparent; transition: 0.3s; }
@@ -99,6 +107,11 @@
 <div class="container">
     <div class="search-box">
         <label style="font-size: 11px; font-weight: bold; margin-bottom: 10px; display: block; opacity: 0.7; text-transform: uppercase;">Cek Kartu Pembayaran</label>
+        
+        <div id="reader"></div>
+        <button class="btn-scan" id="btnStartScan" onclick="mulaiScan()">
+            📷 SCAN QR KARTU
+        </button>
         <input type="text" id="namaWarga" placeholder="Ketik Nama Anda">
         <button class="btn-check" id="btnCek" onclick="cekIuran()">LIHAT KARTU SAYA</button>
     </div>
@@ -118,6 +131,37 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwDJU9NRPmrHhFDHPYZ_mCpIX_xlNcMnz9Pl_w7JWcFEzBLJ8WzyeP2G14ah6bYyXRo/exec';
     const bulanDaftar = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const bulanSingkat = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+    // LOGIKA SCAN QR (TAMBAHAN BARU)
+    let html5QrCode;
+
+    function mulaiScan() {
+        const readerElem = document.getElementById('reader');
+        readerElem.style.display = 'block';
+        document.getElementById('btnStartScan').style.display = 'none';
+
+        html5QrCode = new Html5Qrcode("reader");
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+        html5QrCode.start({ facingMode: "environment" }, config, (decodedText) => {
+            // Jika berhasil scan
+            document.getElementById('namaWarga').value = decodedText;
+            stopScan();
+            cekIuran(); // Langsung jalankan fungsi cek
+        }).catch((err) => {
+            console.warn("Gagal akses kamera", err);
+        });
+    }
+
+    function stopScan() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('reader').style.display = 'none';
+                document.getElementById('btnStartScan').style.display = 'flex';
+            });
+        }
+    }
+    // SELESAI LOGIKA SCAN QR
 
     window.onload = () => {
         const savedTheme = localStorage.getItem('theme') || 'light';
