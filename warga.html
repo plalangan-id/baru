@@ -222,13 +222,29 @@
 
         const grid = document.getElementById('monthGrid');
         grid.innerHTML = '';
-        document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('welcomeNote').innerText = "KARTU IURAN: " + inputNama.toUpperCase();
-
+        
+        // Filter data riwayat milik warga bersangkutan
         const dataWarga = (window.semuaRiwayat || []).filter(h => {
             const namaSheet = (h.nama || "").toLowerCase();
             return namaSheet.includes(inputNama) && h.masuk > 0;
         });
+
+        // VALIDASI: Jika nama tidak ditemukan di data spreadsheet
+        if (dataWarga.length === 0) {
+            alert("Nama '" + document.getElementById('namaWarga').value + "' tidak ditemukan atau belum memiliki riwayat pembayaran!");
+            
+            // Sembunyikan area kartu jika sebelumnya sempat terbuka
+            document.getElementById('resultArea').style.display = 'none'; 
+            
+            // Kembalikan tombol ke keadaan semula
+            btn.innerText = "LIHAT KARTU SAYA";
+            btn.disabled = false;
+            return; // Hentikan di sini agar media kartu iuran tidak tampil
+        }
+
+        // Jika nama ditemukan, jalankan logika pembuatan kartu bawaan Anda
+        document.getElementById('resultArea').style.display = 'block';
+        document.getElementById('welcomeNote').innerText = "KARTU IURAN: " + inputNama.toUpperCase();
 
         bulanDaftar.forEach((bln, index) => {
             const sudahBayar = dataWarga.some(d => {
